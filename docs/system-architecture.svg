@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" viewBox="0 0 680 506" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>PreventDM system architecture</title>
+  <desc>Five-tier architecture: three public health user roles, Flutter cross-platform frontend, Python FastAPI backend, Rust validation service and Python ML inference service in parallel, and PostgreSQL plus Redis as the data layer.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .th { font-size: 14px; font-weight: 500; }
+    .ts { font-size: 12px; font-weight: 400; }
+    .c-gray rect { fill: #F1EFE8; stroke: #5F5E5A; }
+    .c-gray .th { fill: #444441; }
+    .c-gray .ts { fill: #5F5E5A; }
+    .c-purple rect { fill: #EEEDFE; stroke: #534AB7; }
+    .c-purple .th { fill: #3C3489; }
+    .c-purple .ts { fill: #534AB7; }
+    .c-teal rect { fill: #E1F5EE; stroke: #0F6E56; }
+    .c-teal .th { fill: #085041; }
+    .c-teal .ts { fill: #0F6E56; }
+    .arr { stroke: #5F5E5A; stroke-width: 1.5; fill: none; }
+    @media (prefers-color-scheme: dark) {
+      .c-gray rect { fill: #2C2C2A; stroke: #B4B2A9; }
+      .c-gray .th { fill: #D3D1C7; }
+      .c-gray .ts { fill: #B4B2A9; }
+      .c-purple rect { fill: #26215C; stroke: #AFA9EC; }
+      .c-purple .th { fill: #CECBF6; }
+      .c-purple .ts { fill: #AFA9EC; }
+      .c-teal rect { fill: #04342C; stroke: #5DCAA5; }
+      .c-teal .th { fill: #9FE1CB; }
+      .c-teal .ts { fill: #5DCAA5; }
+      .arr { stroke: #B4B2A9; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <g class="c-gray">
+    <rect x="50" y="20" width="180" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="140" y="38" text-anchor="middle" dominant-baseline="central">Prevention lead</text>
+    <text class="ts" x="140" y="56" text-anchor="middle" dominant-baseline="central">Manages enrollment</text>
+  </g>
+  <g class="c-gray">
+    <rect x="250" y="20" width="180" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="340" y="38" text-anchor="middle" dominant-baseline="central">Epidemiologist</text>
+    <text class="ts" x="340" y="56" text-anchor="middle" dominant-baseline="central">Population analytics</text>
+  </g>
+  <g class="c-gray">
+    <rect x="450" y="20" width="180" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="540" y="38" text-anchor="middle" dominant-baseline="central">Program manager</text>
+    <text class="ts" x="540" y="56" text-anchor="middle" dominant-baseline="central">Performance reporting</text>
+  </g>
+
+  <line x1="140" y1="76" x2="140" y2="100" class="arr" marker-end="url(#arrow)"/>
+  <line x1="340" y1="76" x2="340" y2="100" class="arr" marker-end="url(#arrow)"/>
+  <line x1="540" y1="76" x2="540" y2="100" class="arr" marker-end="url(#arrow)"/>
+
+  <g class="c-purple">
+    <rect x="80" y="110" width="520" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="340" y="128" text-anchor="middle" dominant-baseline="central">Flutter cross-platform application</text>
+    <text class="ts" x="340" y="146" text-anchor="middle" dominant-baseline="central">Web, mobile, desktop UI</text>
+  </g>
+
+  <line x1="340" y1="166" x2="340" y2="200" class="arr" marker-end="url(#arrow)"/>
+
+  <g class="c-purple">
+    <rect x="80" y="210" width="520" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="340" y="228" text-anchor="middle" dominant-baseline="central">Python FastAPI backend</text>
+    <text class="ts" x="340" y="246" text-anchor="middle" dominant-baseline="central">Auth, business logic, orchestration</text>
+  </g>
+
+  <line x1="200" y1="266" x2="200" y2="300" class="arr" marker-end="url(#arrow)"/>
+  <line x1="480" y1="266" x2="480" y2="300" class="arr" marker-end="url(#arrow)"/>
+
+  <g class="c-purple">
+    <rect x="80" y="310" width="240" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="200" y="328" text-anchor="middle" dominant-baseline="central">Rust Axum service</text>
+    <text class="ts" x="200" y="346" text-anchor="middle" dominant-baseline="central">Validation + multi-score</text>
+  </g>
+  <g class="c-purple">
+    <rect x="360" y="310" width="240" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="480" y="328" text-anchor="middle" dominant-baseline="central">Python ML service</text>
+    <text class="ts" x="480" y="346" text-anchor="middle" dominant-baseline="central">Model + SHAP explanations</text>
+  </g>
+
+  <path d="M80 266 L60 266 L60 438 L70 438" class="arr" marker-end="url(#arrow)"/>
+  <path d="M600 266 L620 266 L620 438 L610 438" class="arr" marker-end="url(#arrow)"/>
+
+  <g class="c-teal">
+    <rect x="80" y="410" width="240" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="200" y="428" text-anchor="middle" dominant-baseline="central">PostgreSQL</text>
+    <text class="ts" x="200" y="446" text-anchor="middle" dominant-baseline="central">Records, audit logs</text>
+  </g>
+  <g class="c-teal">
+    <rect x="360" y="410" width="240" height="56" rx="8" stroke-width="0.5"/>
+    <text class="th" x="480" y="428" text-anchor="middle" dominant-baseline="central">Redis</text>
+    <text class="ts" x="480" y="446" text-anchor="middle" dominant-baseline="central">Cache, sessions</text>
+  </g>
+</svg>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Risk assessment data flow</title>
+  <desc>Sequence diagram showing how a patient risk assessment request flows from the Flutter frontend through the FastAPI backend, the Rust validation service, the ML inference service, and into PostgreSQL, with the response returning to the frontend.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .th { font-size: 14px; font-weight: 500; }
+    .ts { font-size: 12px; font-weight: 400; }
+    .c-purple rect { fill: #EEEDFE; stroke: #534AB7; }
+    .c-purple .th { fill: #3C3489; }
+    .c-teal rect { fill: #E1F5EE; stroke: #0F6E56; }
+    .c-teal .th { fill: #085041; }
+    .lifeline { stroke: #888780; stroke-width: 0.5; stroke-dasharray: 3 3; opacity: 0.4; }
+    .arr { stroke: #5F5E5A; stroke-width: 1.5; fill: none; }
+    .ts-label { fill: #444441; }
+    @media (prefers-color-scheme: dark) {
+      .c-purple rect { fill: #26215C; stroke: #AFA9EC; }
+      .c-purple .th { fill: #CECBF6; }
+      .c-teal rect { fill: #04342C; stroke: #5DCAA5; }
+      .c-teal .th { fill: #9FE1CB; }
+      .lifeline { stroke: #B4B2A9; }
+      .arr { stroke: #B4B2A9; }
+      .ts-label { fill: #D3D1C7; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <line x1="75" y1="64" x2="75" y2="370" class="lifeline"/>
+  <line x1="205" y1="64" x2="205" y2="370" class="lifeline"/>
+  <line x1="335" y1="64" x2="335" y2="370" class="lifeline"/>
+  <line x1="465" y1="64" x2="465" y2="370" class="lifeline"/>
+  <line x1="595" y1="64" x2="595" y2="370" class="lifeline"/>
+
+  <g class="c-purple">
+    <rect x="20" y="20" width="110" height="44" rx="8" stroke-width="0.5"/>
+    <text class="th" x="75" y="42" text-anchor="middle" dominant-baseline="central">Flutter</text>
+  </g>
+  <g class="c-purple">
+    <rect x="150" y="20" width="110" height="44" rx="8" stroke-width="0.5"/>
+    <text class="th" x="205" y="42" text-anchor="middle" dominant-baseline="central">Backend</text>
+  </g>
+  <g class="c-purple">
+    <rect x="280" y="20" width="110" height="44" rx="8" stroke-width="0.5"/>
+    <text class="th" x="335" y="42" text-anchor="middle" dominant-baseline="central">Rust API</text>
+  </g>
+  <g class="c-purple">
+    <rect x="410" y="20" width="110" height="44" rx="8" stroke-width="0.5"/>
+    <text class="th" x="465" y="42" text-anchor="middle" dominant-baseline="central">ML service</text>
+  </g>
+  <g class="c-teal">
+    <rect x="540" y="20" width="110" height="44" rx="8" stroke-width="0.5"/>
+    <text class="th" x="595" y="42" text-anchor="middle" dominant-baseline="central">Database</text>
+  </g>
+
+  <text class="ts ts-label" x="140" y="92" text-anchor="middle" dominant-baseline="central">1. Submit data</text>
+  <line x1="80" y1="100" x2="195" y2="100" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="270" y="132" text-anchor="middle" dominant-baseline="central">2. Validate</text>
+  <line x1="210" y1="140" x2="325" y2="140" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="270" y="172" text-anchor="middle" dominant-baseline="central">3. Features + scores</text>
+  <line x1="330" y1="180" x2="215" y2="180" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="335" y="212" text-anchor="middle" dominant-baseline="central">4. Predict</text>
+  <line x1="210" y1="220" x2="455" y2="220" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="335" y="252" text-anchor="middle" dominant-baseline="central">5. Probability + SHAP</text>
+  <line x1="460" y1="260" x2="215" y2="260" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="400" y="292" text-anchor="middle" dominant-baseline="central">6. Persist record</text>
+  <line x1="210" y1="300" x2="585" y2="300" class="arr" marker-end="url(#arrow)"/>
+
+  <text class="ts ts-label" x="140" y="332" text-anchor="middle" dominant-baseline="central">7. Risk profile</text>
+  <line x1="200" y1="340" x2="85" y2="340" class="arr" marker-end="url(#arrow)"/>
+</svg>

@@ -1,0 +1,7 @@
+# Build configuration for the PreventDM Rust validation service.
+#
+# Configures the MinGW-w64 GCC linker for the x86_64-pc-windows-gnu
+# toolchain used on this Windows development machine.  Rust on Linux
+# or macOS will not read this section.
+[target.x86_64-pc-windows-gnu]
+linker = "gcc"

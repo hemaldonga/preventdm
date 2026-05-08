@@ -1,0 +1,21 @@
+# Cargo build artifacts — this directory can be hundreds of megabytes.
+# Excluding it keeps the build context small and prevents stale host binaries
+# from interfering with the Docker build.
+target/
+
+# Git history — not needed inside the image
+.git/
+.gitignore
+
+# Local environment variable files — secrets must not leak into images
+.env
+
+# rust-toolchain.toml pins the toolchain to 1.85-x86_64-pc-windows-gnu,
+# which is a Windows host triple. Including this file in a Linux Docker build
+# would cause rustup to attempt installing a Windows toolchain and fail.
+# The builder image already has the correct Linux Rust toolchain installed.
+rust-toolchain.toml
+
+# IDE and editor metadata
+.vscode/
+.idea/

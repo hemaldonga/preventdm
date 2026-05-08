@@ -1,0 +1,21 @@
+# Virtual environment created by uv — never copy into the build context
+.venv/
+
+# Python bytecode and cache directories
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Git history — not needed inside the image
+.git/
+.gitignore
+
+# Local environment variable files — secrets must not leak into images
+.env
+
+# IDE and editor metadata
+.vscode/
+.idea/

@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Rust
+/rust_service/target/
+**/*.rs.bk
+Cargo.lock
+
+# Node and Flutter (for later)
+node_modules/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+
+# Logs
+*.log
+logs/
+
+# Coverage and test outputs
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# Database and data files
+*.sqlite
+*.db
+data/

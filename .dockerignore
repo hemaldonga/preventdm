@@ -1,0 +1,46 @@
+# =============================================================================
+# Root-level .dockerignore
+#
+# This file applies when the Docker build context is the project root.
+# Each service directory (backend/, rust_service/, ml_service/) has its own
+# .dockerignore that applies when that directory is used as the build context,
+# which is the standard case for docker compose builds defined in
+# docker-compose.yml.
+#
+# Reference: https://docs.docker.com/build/concepts/context/#dockerignore-files
+# =============================================================================
+
+# Version control metadata
+.git
+.gitignore
+
+# Documentation — not needed inside any runtime image
+docs/
+README.md
+
+# Compose-level environment files — never bake credentials into images
+.env
+.env.compose
+.env.example.compose
+
+# Python build artifacts and virtual environments
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.venv/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# Rust build artifacts (the target/ directory can be several GB)
+**/target/
+
+# Node.js (in case JavaScript tooling is added in a future phase)
+**/node_modules/
+
+# IDE and editor configuration
+.vscode/
+.idea/
+**/.vscode/
+**/.idea/

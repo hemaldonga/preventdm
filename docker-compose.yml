@@ -1,0 +1,179 @@
+# PreventDM — Docker Compose orchestration (Phase Seven)
+#
+# Canonical commands:
+#   Start:  docker compose up -d
+#   Stop:   docker compose down
+#
+# All five services share a single bridge network (preventdm_network).
+# Application services do not start until postgres and redis pass their
+# health checks, enforced via depends_on with condition: service_healthy.
+#
+# Port overrides and database credentials are configurable via environment
+# variables. Copy .env.example.compose to .env and edit to override defaults.
+# Docker Compose reads .env automatically; to use a differently-named file:
+#   docker compose --env-file .env.compose up -d
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16 — primary relational data store
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-preventdm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-preventdm_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-preventdm}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Named volume so database state persists across docker compose down/up.
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - preventdm_network
+    healthcheck:
+      # pg_isready exits 0 when the server accepts connections. Using the
+      # built-in postgres superuser avoids a dependency on application
+      # credentials at health-check time. The -d flag targets the application
+      # database so the check fails until that database has been created.
+      test: ["CMD-SHELL", "pg_isready -U postgres -d preventdm"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Redis 7 — cache and session store
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      # Named volume preserves any persisted Redis state across restarts.
+      - redis_data:/data
+    networks:
+      - preventdm_network
+    healthcheck:
+      # redis-cli ping returns PONG when the server is responsive.
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Backend — Python FastAPI orchestration service (container port 8000)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      # Pre-wired for Phase Nine. Uses postgres/redis as hostnames because on
+      # the internal compose network services resolve by their service name.
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-preventdm}:${POSTGRES_PASSWORD:-preventdm_dev_password}@postgres:5432/${POSTGRES_DB:-preventdm}"
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    networks:
+      - preventdm_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # python:3.12-slim does not ship curl or wget. Python's stdlib urllib is
+      # always present and avoids adding extra packages to the runtime image.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
+  # ---------------------------------------------------------------------------
+  # Rust service — Axum validation service (container port 8001)
+  # ---------------------------------------------------------------------------
+  rust_service:
+    build:
+      context: ./rust_service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      # Explicit SERVER_PORT matches the container-side port and the Rust
+      # service's Config::from_env default, keeping the two in sync visibly.
+      SERVER_PORT: "8001"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-preventdm}:${POSTGRES_PASSWORD:-preventdm_dev_password}@postgres:5432/${POSTGRES_DB:-preventdm}"
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "${RUST_SERVICE_PORT:-8001}:8001"
+    networks:
+      - preventdm_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # debian:bookworm-slim contains no curl, wget, or Python. /proc/net/tcp
+      # lists all kernel TCP sockets. Port 8001 is 0x1F41 in big-endian hex,
+      # which is how the kernel encodes port numbers in that file. A match
+      # confirms the Axum server has bound and is listening.
+      test: ["CMD-SHELL", "grep -q ':1F41 ' /proc/net/tcp"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
+  # ---------------------------------------------------------------------------
+  # ML service — Python scikit-learn inference service (container port 8002)
+  # ---------------------------------------------------------------------------
+  ml_service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-preventdm}:${POSTGRES_PASSWORD:-preventdm_dev_password}@postgres:5432/${POSTGRES_DB:-preventdm}"
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "${ML_SERVICE_PORT:-8002}:8002"
+    networks:
+      - preventdm_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
+# -----------------------------------------------------------------------------
+# Named volumes — data persists across docker compose down / docker compose up.
+# docker compose down -v removes volumes (use only to fully reset state).
+# -----------------------------------------------------------------------------
+volumes:
+  postgres_data:
+  redis_data:
+
+# -----------------------------------------------------------------------------
+# Explicit bridge network
+#
+# Defining the network explicitly (rather than relying on compose's default)
+# makes the topology self-documenting and allows future phases to reference the
+# network by name when attaching additional services or tooling.
+# -----------------------------------------------------------------------------
+networks:
+  preventdm_network:
+    driver: bridge

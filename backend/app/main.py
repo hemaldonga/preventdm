@@ -10,7 +10,7 @@ import sys
 import fastapi
 
 from app.config import get_settings
-from app.routers import health
+from app.routers import assess, health
 
 _LOG_LEVELS: dict[str, int] = {
     "DEBUG": logging.DEBUG,
@@ -59,6 +59,7 @@ def create_app() -> fastapi.FastAPI:
         version=pkg_version,
     )
     application.include_router(health.router)
+    application.include_router(assess.router)
 
     return application
 

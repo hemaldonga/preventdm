@@ -78,6 +78,9 @@ services:
       # the internal compose network services resolve by their service name.
       DATABASE_URL: "postgresql://${POSTGRES_USER:-preventdm}:${POSTGRES_PASSWORD:-preventdm_dev_password}@postgres:5432/${POSTGRES_DB:-preventdm}"
       REDIS_URL: redis://redis:6379/0
+      # Internal compose hostnames for upstream service calls added in Phase Eight.
+      RUST_SERVICE_URL: http://rust_service:8001
+      ML_SERVICE_URL: http://ml_service:8002
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     networks:

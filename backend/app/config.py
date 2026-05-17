@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     app_name: str = "PreventDM Backend"
     app_env: Literal["development", "staging", "production"] = "development"
     log_level: str = "INFO"
+    rust_service_url: str = "http://rust_service:8001"
+    ml_service_url: str = "http://ml_service:8002"
 
 
 @functools.lru_cache

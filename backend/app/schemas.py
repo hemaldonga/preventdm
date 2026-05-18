@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Annotated, Literal
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -113,6 +114,18 @@ class MLPrediction(BaseModel):
 class AssessmentResponse(BaseModel):
     """Assembled assessment result returned by the backend to the client."""
 
+    assessment_id: UUID | None = None
+    patient_external_id: str
+    assessment_timestamp_utc: str
+    validated_features: ValidatedFeatures
+    clinical_scores: ClinicalScores
+    ml_prediction: MLPrediction
+
+
+class GetAssessmentResponse(BaseModel):
+    """Persisted assessment retrieved by GET /assess/{assessment_id}."""
+
+    assessment_id: UUID
     patient_external_id: str
     assessment_timestamp_utc: str
     validated_features: ValidatedFeatures

@@ -60,6 +60,11 @@ COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
 # Copy application source code with correct ownership.
 COPY --chown=appuser:appuser app/ ./app/
 
+# Copy Alembic configuration so migrations can be run inside the container:
+#   docker compose exec backend alembic upgrade head
+COPY --chown=appuser:appuser alembic.ini ./
+COPY --chown=appuser:appuser alembic/ ./alembic/
+
 # Add the virtual environment's bin directory to PATH so that uvicorn and all
 # other installed entry points are resolved without an explicit path prefix.
 ENV PATH="/app/.venv/bin:$PATH"

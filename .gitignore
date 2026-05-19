@@ -56,3 +56,6 @@ coverage.xml
 *.sqlite
 *.db
 data/
+
+# Claude Code working files
+.claude/
